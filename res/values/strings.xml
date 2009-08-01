@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, FotoHookIntent!</string>
+    <string name="app_name">FotoHook</string>
+	<string name="processing">処理中です</string>
+	<string name="user_id">はてなID</string>
+	<string name="password">パスワード</string>
+	<string name="submit">送信</string>
+	<string name="done">完了</string>
+	<string name="cancel">キャンセル</string>
+	<string name="title">タイトル</string>
+	<string name="hook_url">hook URL</string>
+</resources>
