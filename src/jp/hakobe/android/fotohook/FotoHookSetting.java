@@ -1,5 +1,6 @@
-package jp.hakobe.android.fotohook.activity;
+package jp.hakobe.android.fotohook;
 
+import jp.hakobe.android.fotohook.R;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -13,11 +14,9 @@ public class FotoHookSetting extends PreferenceActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//addPreferencesFromResource(R.xml.setting);
 		setPreferenceScreen(createPreference());
 	}
 	
-
 	public static String getUserID(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context).getString("user_id", "");
 	}
@@ -29,8 +28,7 @@ public class FotoHookSetting extends PreferenceActivity {
 	}
 	
 	private PreferenceScreen createPreference() {
-        PreferenceScreen root = getPreferenceManager
-().createPreferenceScreen(this);
+        PreferenceScreen root = getPreferenceManager().createPreferenceScreen(this);
         
         EditTextPreference userIdPref = new EditTextPreference(this);
         userIdPref.setDialogTitle(R.string.user_id);
