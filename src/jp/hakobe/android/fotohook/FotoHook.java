@@ -68,14 +68,14 @@ public class FotoHook extends Activity implements DialogInterface.OnClickListene
 		}
 		
 		if (!valid) {
-			this.showErrorDialog("ID or Password is not set.");
+			this.showErrorDialog(R.string.error_validate);
 		}
 	}
 	
-	private void showErrorDialog(String message) {
+	private void showErrorDialog(int messageId) {
     	new AlertDialog.Builder(this)
-		.setTitle("FotoHook: error")
-		.setMessage(message)
+		.setTitle(R.string.error_dialog_title)
+		.setMessage(messageId)
 		.setPositiveButton("OK", new OnClickListener() {			
 			public void onClick(DialogInterface dialog, int which) {
 				FotoHook.this.finish();
@@ -128,7 +128,7 @@ public class FotoHook extends Activity implements DialogInterface.OnClickListene
 				fotoHookPostService.post(uri, title);
 			} catch (RemoteException e) {
 				e.printStackTrace();
-				FotoHook.this.showErrorDialog("Failed to Post");
+				FotoHook.this.showErrorDialog(R.string.error_post_fail);
 			}			
 		}
 		this.finish();

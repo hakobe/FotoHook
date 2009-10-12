@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, FotoHookIntent!</string>
     <string name="app_name">FotoHook</string>
-	<string name="processing">処理中です</string>
-	<string name="user_id">はてなID</string>
-	<string name="password">パスワード</string>
-	<string name="submit">送信</string>
-	<string name="done">完了</string>
-	<string name="cancel">キャンセル</string>
-	<string name="title">タイトル</string>
+	<string name="user_id">Hatena ID</string>
+	<string name="password">Password</string>
+	<string name="submit">Submit</string>
+	<string name="done">Done</string>
+	<string name="cancel">Cancel</string>
+	<string name="title">Title</string>
 	<string name="hook_url">hook URL</string>
+
+	<string name="notification_upload_ticker">Uploading Images ...</string>
+	<string name="notification_upload_title">FotoHook</string>
+	<string name="notification_upload_message">Uploading Images ...</string>
+	
+	<string name="toast_upload_start">Start Uploading</string>
+	<string name="toast_upload_success">FotoHook: Upload Success</string>
+	<string name="toast_upload_failure">FotoHook: Upload Failure</string>
+	
+	<string name="error_dialog_title">FotoHook: error</string>
+	<string name="error_post_fail">Failed to Post</string>
+	<string name="error_validate">ID or Password is not set</string>
 </resources>

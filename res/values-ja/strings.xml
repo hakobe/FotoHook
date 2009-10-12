@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FotoHook</string>
+	<string name="user_id">はてなID</string>
+	<string name="password">パスワード</string>
+	<string name="submit">送信</string>
+	<string name="done">完了</string>
+	<string name="cancel">キャンセル</string>
+	<string name="title">タイトル</string>
+	<string name="hook_url">hook URL</string>
+		
+	<string name="notification_upload_ticker">画像をアップロードしています…</string>
+	<string name="notification_upload_title">FotoHook</string>
+	<string name="notification_upload_message">画像をアップロードしています…</string>
+	
+	<string name="toast_upload_start">アップロードを開始しました</string>
+	<string name="toast_upload_success">FotoHook: アップロード成功</string>
+	<string name="toast_upload_failure">FotoHook: アップロード失敗</string>
+	
+	<string name="error_dialog_title">FotoHook: エラー</string>
+	<string name="error_post_fail">ポストに失敗しました</string>
+	<string name="error_validate">IDもしくはパスワードが設定されていません</string>
+</resources>

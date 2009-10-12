@@ -70,14 +70,14 @@ public class FotoHookPostService extends Service {
 	@Override
 	public void onLowMemory() {
 		super.onLowMemory();
-		Log.d(TAG, "Uhhps low memory.");
+		//Log.d(TAG, "Uhhps low memory.");
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		this.closeNotification();
-		Log.d(TAG, "killed");
+		//Log.d(TAG, "killed");
 	}
 	
 	private IFotoHookPostService.Stub fotoHookPostService = new IFotoHookPostService.Stub() {
@@ -99,11 +99,11 @@ public class FotoHookPostService extends Service {
 		}
 	};
 	
-	public void showNotification(int iconID, String ticker, String title, String message) {
+	public void showNotification(int iconID, int tickerID, int titleID, int messageID) {
 
-		Notification notification = new Notification(iconID, ticker, System.currentTimeMillis());
+		Notification notification = new Notification(iconID, this.getString(tickerID), System.currentTimeMillis());
         PendingIntent intent=PendingIntent.getActivity(this, 0, null, 0);
-        notification.setLatestEventInfo(this, title, message, intent);
+        notification.setLatestEventInfo(this, this.getString(titleID), this.getString(messageID), intent);
         
         this.notificationManager.cancel(0);
         this.notificationManager.notify(0, notification);
@@ -145,7 +145,13 @@ class FotolifeAPI implements Runnable {
 	}
 		
 	public void post(Uri uri, String title, String hookUrl) {
-		this.context.showNotification(R.drawable.icon, "FotoHook: Uploading ...", "FotoHook", "Uploading Images ...");
+		this.context.showNotification(
+			R.drawable.icon, 
+			R.string.notification_upload_ticker, 
+			R.string.notification_upload_title, 
+			R.string.notification_upload_message
+		);
+		Toast.makeText(this.context, R.string.toast_upload_start, Toast.LENGTH_LONG).show();
 		Thread action = new FotolifePostAction(this, this.handler, this.user_id, this.password, uri, title, hookUrl);
 		action.start();
 	}
@@ -156,12 +162,12 @@ class FotolifeAPI implements Runnable {
 	
 	private void onPostFinish() {
 		if (this.isSuccess()) {
-			Log.i(TAG, "Upload Success.");
-			Toast.makeText(this.context, "FotoHook: Upload success", Toast.LENGTH_LONG * 2).show();
+			//Log.i(TAG, "Upload Success.");
+			Toast.makeText(this.context, R.string.toast_upload_success, Toast.LENGTH_LONG).show();
 		}
 		else {
-			Log.i(TAG, "Upload Error.");
-			Toast.makeText(this.context, "FotoHook: Upload error", Toast.LENGTH_LONG * 2).show();
+			//Log.i(TAG, "Upload Error.");
+			Toast.makeText(this.context, R.string.toast_upload_failure, Toast.LENGTH_LONG).show();
 		}
 		this.context.closeNotification();
 		this.context.stopSelf();		
