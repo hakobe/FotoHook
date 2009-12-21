@@ -51,269 +51,269 @@ import android.widget.Toast;
 
 public class FotoHookPostService extends Service {
 
-	private static final String TAG = "FotoHookPostService";
-	private NotificationManager notificationManager;
+    private static final String TAG = "FotoHookPostService";
+    private NotificationManager notificationManager;
 
-	@Override
-	public IBinder onBind(Intent intent) {
+    @Override
+    public IBinder onBind(Intent intent) {
         if(IFotoHookPostService.class.getName().equals(intent.getAction())){
             return fotoHookPostService;
         }
-		return null;
-	}	
-	
-	@Override
-	public void onCreate() {
-		this.notificationManager = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
-	}
-	
-	@Override
-	public void onLowMemory() {
-		super.onLowMemory();
-		//Log.d(TAG, "Uhhps low memory.");
-	}
-	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		this.closeNotification();
-		//Log.d(TAG, "killed");
-	}
-	
-	private IFotoHookPostService.Stub fotoHookPostService = new IFotoHookPostService.Stub() {
-		public void post(Uri uri, String title) {
-			String user_id = FotoHookSetting.getUserID(FotoHookPostService.this);
-			String password = FotoHookSetting.getPassword(FotoHookPostService.this);
-			String hookUrl = FotoHookSetting.getHookUrl(FotoHookPostService.this);
-			
-			if (!this.validate(user_id, password)) {
-				return;
-			}
-			
-			FotolifeAPI f = new FotolifeAPI(FotoHookPostService.this, user_id, password);
-			f.post(uri, title, hookUrl);
-		}
-		
-		private boolean validate(String user_id, String password) {
-			return (user_id != null && user_id.length() > 0 && password != null && password.length() > 0);
-		}
-	};
-	
-	public void showNotification(int iconID, int tickerID, int titleID, int messageID) {
+        return null;
+    }    
+    
+    @Override
+    public void onCreate() {
+        this.notificationManager = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+    
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        //Log.d(TAG, "Uhhps low memory.");
+    }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        this.closeNotification();
+        //Log.d(TAG, "killed");
+    }
+    
+    private IFotoHookPostService.Stub fotoHookPostService = new IFotoHookPostService.Stub() {
+        public void post(Uri uri, String title) {
+            String user_id = FotoHookSetting.getUserID(FotoHookPostService.this);
+            String password = FotoHookSetting.getPassword(FotoHookPostService.this);
+            String hookUrl = FotoHookSetting.getHookUrl(FotoHookPostService.this);
+            
+            if (!this.validate(user_id, password)) {
+                return;
+            }
+            
+            FotolifeAPI f = new FotolifeAPI(FotoHookPostService.this, user_id, password);
+            f.post(uri, title, hookUrl);
+        }
+        
+        private boolean validate(String user_id, String password) {
+            return (user_id != null && user_id.length() > 0 && password != null && password.length() > 0);
+        }
+    };
+    
+    public void showNotification(int iconID, int tickerID, int titleID, int messageID) {
 
-		Notification notification = new Notification(iconID, this.getString(tickerID), System.currentTimeMillis());
+        Notification notification = new Notification(iconID, this.getString(tickerID), System.currentTimeMillis());
         PendingIntent intent=PendingIntent.getActivity(this, 0, null, 0);
         notification.setLatestEventInfo(this, this.getString(titleID), this.getString(messageID), intent);
         
         this.notificationManager.cancel(0);
         this.notificationManager.notify(0, notification);
     }
-	
-	public void closeNotification() {
-		this.notificationManager.cancelAll();
-	}
+    
+    public void closeNotification() {
+        this.notificationManager.cancelAll();
+    }
 }
 
 class FotolifeAPI implements Runnable {
-	
-	private final static String TAG = "FotolifeAPI";
-	
-	private final FotoHookPostService context;
-	private final String user_id;
-	private final String password;
-	
-	private boolean result = false;
+    
+    private final static String TAG = "FotolifeAPI";
+    
+    private final FotoHookPostService context;
+    private final String user_id;
+    private final String password;
+    
+    private boolean result = false;
 
-	private final Handler handler = new Handler();
-	
-	public FotolifeAPI(FotoHookPostService context, String user_id, String password) {
-		this.context = context;
-		this.user_id = user_id;
-		this.password = password;
-	}
-	
-	public boolean isSuccess() {
-		return this.result; 
-	}
-	
-	public Service getService() {
-		return this.context;
-	}
-	
-	public void setResult(boolean result) {
-		this.result = result;
-	}
-		
-	public void post(Uri uri, String title, String hookUrl) {
-		this.context.showNotification(
-			R.drawable.icon, 
-			R.string.notification_upload_ticker, 
-			R.string.notification_upload_title, 
-			R.string.notification_upload_message
-		);
-		Toast.makeText(this.context, R.string.toast_upload_start, Toast.LENGTH_LONG).show();
-		Thread action = new FotolifePostAction(this, this.handler, this.user_id, this.password, uri, title, hookUrl);
-		action.start();
-	}
-	
-	public void run() { 
-		this.onPostFinish();
-	}
-	
-	private void onPostFinish() {
-		if (this.isSuccess()) {
-			//Log.i(TAG, "Upload Success.");
-			Toast.makeText(this.context, R.string.toast_upload_success, Toast.LENGTH_LONG).show();
-		}
-		else {
-			//Log.i(TAG, "Upload Error.");
-			Toast.makeText(this.context, R.string.toast_upload_failure, Toast.LENGTH_LONG).show();
-		}
-		this.context.closeNotification();
-		this.context.stopSelf();		
-	}
+    private final Handler handler = new Handler();
+    
+    public FotolifeAPI(FotoHookPostService context, String user_id, String password) {
+        this.context = context;
+        this.user_id = user_id;
+        this.password = password;
+    }
+    
+    public boolean isSuccess() {
+        return this.result; 
+    }
+    
+    public Service getService() {
+        return this.context;
+    }
+    
+    public void setResult(boolean result) {
+        this.result = result;
+    }
+        
+    public void post(Uri uri, String title, String hookUrl) {
+        this.context.showNotification(
+            R.drawable.icon, 
+            R.string.notification_upload_ticker, 
+            R.string.notification_upload_title, 
+            R.string.notification_upload_message
+        );
+        Toast.makeText(this.context, R.string.toast_upload_start, Toast.LENGTH_LONG).show();
+        Thread action = new FotolifePostAction(this, this.handler, this.user_id, this.password, uri, title, hookUrl);
+        action.start();
+    }
+    
+    public void run() { 
+        this.onPostFinish();
+    }
+    
+    private void onPostFinish() {
+        if (this.isSuccess()) {
+            //Log.i(TAG, "Upload Success.");
+            Toast.makeText(this.context, R.string.toast_upload_success, Toast.LENGTH_LONG).show();
+        }
+        else {
+            //Log.i(TAG, "Upload Error.");
+            Toast.makeText(this.context, R.string.toast_upload_failure, Toast.LENGTH_LONG).show();
+        }
+        this.context.closeNotification();
+        this.context.stopSelf();        
+    }
 }
 
 class FotolifePostAction extends Thread {
-	
-	private final static String TAG = "FotolifePostAction";
-	
-	private final Uri uri;
-	private final String user_id;
-	private final String password;
-	private final String title;
-	private final String hookUrl;
-	private final Handler handler;
-	private final FotolifeAPI listener;
-	
-	private final HttpClient client = new DefaultHttpClient();
-	
-	public FotolifePostAction(
-			FotolifeAPI listener, Handler handler, String user_id, String password, Uri uri, String title, String hookUrl) {
-		this.listener = listener;
-		this.handler = handler;
-		this.user_id = user_id;
-		this.password = password;
-		this.uri = uri;
-		this.title = title;
-		this.hookUrl = hookUrl;
-	}
-	
-	public void run() {
-		HashMap<String, String> result = null;
-		try {
-			result = this.postFoto(uri, user_id, password, title);
-			this.runHook(hookUrl, result, title);
-			this.listener.setResult(true);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			this.listener.setResult(false);
-		}	
-		finally {
-			this.handler.post(listener); 
-		}
-	}
-	
-	private HashMap<String, String> postFoto(
-			Uri uri,
-			String user_id, 
-			String password, 
-			String title
-		) throws ClientProtocolException, IOException {
-		
-		HttpPost req = new HttpPost("http://f.hatena.ne.jp/atom/post");
-		req.addHeader("X-WSSE", FotoHookUtils.createWsseHeader(user_id, password));
-		req.setEntity(createPostXMLEntity(uri, title));
-		
-		HttpResponse res = client.execute(req);
-		int statusCode = res.getStatusLine().getStatusCode();
-		if (statusCode != HttpStatus.SC_CREATED) {
-			req.abort();
-			throw new HttpResponseException(statusCode, "Failed to doPost: " + new Integer(statusCode).toString());
-		}
+    
+    private final static String TAG = "FotolifePostAction";
+    
+    private final Uri uri;
+    private final String user_id;
+    private final String password;
+    private final String title;
+    private final String hookUrl;
+    private final Handler handler;
+    private final FotolifeAPI listener;
+    
+    private final HttpClient client = new DefaultHttpClient();
+    
+    public FotolifePostAction(
+            FotolifeAPI listener, Handler handler, String user_id, String password, Uri uri, String title, String hookUrl) {
+        this.listener = listener;
+        this.handler = handler;
+        this.user_id = user_id;
+        this.password = password;
+        this.uri = uri;
+        this.title = title;
+        this.hookUrl = hookUrl;
+    }
+    
+    public void run() {
+        HashMap<String, String> result = null;
+        try {
+            result = this.postFoto(uri, user_id, password, title);
+            this.runHook(hookUrl, result, title);
+            this.listener.setResult(true);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            this.listener.setResult(false);
+        }    
+        finally {
+            this.handler.post(listener); 
+        }
+    }
+    
+    private HashMap<String, String> postFoto(
+            Uri uri,
+            String user_id, 
+            String password, 
+            String title
+        ) throws ClientProtocolException, IOException {
+        
+        HttpPost req = new HttpPost("http://f.hatena.ne.jp/atom/post");
+        req.addHeader("X-WSSE", FotoHookUtils.createWsseHeader(user_id, password));
+        req.setEntity(createPostXMLEntity(uri, title));
+        
+        HttpResponse res = client.execute(req);
+        int statusCode = res.getStatusLine().getStatusCode();
+        if (statusCode != HttpStatus.SC_CREATED) {
+            req.abort();
+            throw new HttpResponseException(statusCode, "Failed to doPost: " + new Integer(statusCode).toString());
+        }
 
-		return parseResultXML(res.getEntity().getContent());		
-	}
-	
-	private void runHook(
-			String hookUrl, 
-			HashMap<String, String> params, 
-			String title
-		) throws ClientProtocolException, IOException, URISyntaxException {
-		
-		if (hookUrl.length() <= 0) {return;}
-		HttpGet req = new HttpGet(
-				new URI(hookUrl+"?imageurl="+URLEncoder.encode(params.get("url"), "UTF-8")+"&title="+URLEncoder.encode(title, "UTF-8")+"&hatenasyntax="+URLEncoder.encode(params.get("hatenasyntax"), "UTF-8")));	
-		
-		HttpResponse res = client.execute(req);
-		int statusCode = res.getStatusLine().getStatusCode();
-		if (statusCode != HttpStatus.SC_OK) {
-			req.abort();
-			throw new HttpResponseException(statusCode, "Failed to runHook: " + new Integer(statusCode).toString());
-		}
-	}
-	
-	private HttpEntity createPostXMLEntity(Uri uri, String title) {
-		ByteArrayOutputStream resultOutput = new ByteArrayOutputStream();
-		try {
-			resultOutput.write(
-					("<entry xmlns=\"http://purl.org/atom/ns#\"><title>" 
-					+ title 
-					+ "</title><content mode=\"base64\" type=\"image/jpeg\">").getBytes());
-			
-			byte[] image = this.loadImageToBytes(uri);
-			resultOutput.write(Base64.encodeBase64(image));
-			
-			resultOutput.write("</content></entry>".getBytes());
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		HttpEntity entity = new ByteArrayEntity(resultOutput.toByteArray());
-		return entity;
-	}
-	
-	private byte[] loadImageToBytes(Uri uri) throws IOException {
-		InputStream input = this.listener.getService().getContentResolver().openInputStream(uri);
-		
-		ByteArrayOutputStream output = this.inputToByteArrayOutputStream(input);
-		byte[] image;
-		image = output.toByteArray();
-		
-		return image;
-	}
-	
-	private ByteArrayOutputStream inputToByteArrayOutputStream(InputStream input) {
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		FotoHookUtils.loadInputStreamToOutputStream(input, output);
-		return output;
-	}
-		
-	private HashMap<String, String> parseResultXML(InputStream input) {
-		HashMap<String, String> result = new HashMap<String, String>();
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		String data;
-		try {
-			FotoHookUtils.loadInputStreamToOutputStream(input, output);
-			data = output.toString();
-		}
-		catch (Exception e) {
-			return result;
-		}
+        return parseResultXML(res.getEntity().getContent());        
+    }
+    
+    private void runHook(
+            String hookUrl, 
+            HashMap<String, String> params, 
+            String title
+        ) throws ClientProtocolException, IOException, URISyntaxException {
+        
+        if (hookUrl.length() <= 0) {return;}
+        HttpGet req = new HttpGet(
+                new URI(hookUrl+"?imageurl="+URLEncoder.encode(params.get("url"), "UTF-8")+"&title="+URLEncoder.encode(title, "UTF-8")+"&hatenasyntax="+URLEncoder.encode(params.get("hatenasyntax"), "UTF-8")));    
+        
+        HttpResponse res = client.execute(req);
+        int statusCode = res.getStatusLine().getStatusCode();
+        if (statusCode != HttpStatus.SC_OK) {
+            req.abort();
+            throw new HttpResponseException(statusCode, "Failed to runHook: " + new Integer(statusCode).toString());
+        }
+    }
+    
+    private HttpEntity createPostXMLEntity(Uri uri, String title) {
+        ByteArrayOutputStream resultOutput = new ByteArrayOutputStream();
+        try {
+            resultOutput.write(
+                    ("<entry xmlns=\"http://purl.org/atom/ns#\"><title>" 
+                    + title 
+                    + "</title><content mode=\"base64\" type=\"image/jpeg\">").getBytes());
+            
+            byte[] image = this.loadImageToBytes(uri);
+            resultOutput.write(Base64.encodeBase64(image));
+            
+            resultOutput.write("</content></entry>".getBytes());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        HttpEntity entity = new ByteArrayEntity(resultOutput.toByteArray());
+        return entity;
+    }
+    
+    private byte[] loadImageToBytes(Uri uri) throws IOException {
+        InputStream input = this.listener.getService().getContentResolver().openInputStream(uri);
+        
+        ByteArrayOutputStream output = this.inputToByteArrayOutputStream(input);
+        byte[] image;
+        image = output.toByteArray();
+        
+        return image;
+    }
+    
+    private ByteArrayOutputStream inputToByteArrayOutputStream(InputStream input) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        FotoHookUtils.loadInputStreamToOutputStream(input, output);
+        return output;
+    }
+        
+    private HashMap<String, String> parseResultXML(InputStream input) {
+        HashMap<String, String> result = new HashMap<String, String>();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        String data;
+        try {
+            FotoHookUtils.loadInputStreamToOutputStream(input, output);
+            data = output.toString();
+        }
+        catch (Exception e) {
+            return result;
+        }
 
-		Pattern pattern = Pattern.compile("http://f\\.hatena\\.ne\\.jp/[^\"]+");
-		Matcher m = pattern.matcher(data);
-		if ( m.find() ) {
-			result.put("url", m.group(0));
-		}
-		
-		pattern = Pattern.compile("f:[^<]+");
-		m = pattern.matcher(data);
-		if ( m.find() ) {
-			result.put("hatenasyntax", m.group(0));
-		}
-		return result;
-	}
+        Pattern pattern = Pattern.compile("http://f\\.hatena\\.ne\\.jp/[^\"]+");
+        Matcher m = pattern.matcher(data);
+        if ( m.find() ) {
+            result.put("url", m.group(0));
+        }
+        
+        pattern = Pattern.compile("f:[^<]+");
+        m = pattern.matcher(data);
+        if ( m.find() ) {
+            result.put("hatenasyntax", m.group(0));
+        }
+        return result;
+    }
 }

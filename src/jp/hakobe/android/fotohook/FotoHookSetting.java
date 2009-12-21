@@ -11,23 +11,23 @@ import android.text.method.PasswordTransformationMethod;
 import android.widget.EditText;
 
 public class FotoHookSetting extends PreferenceActivity {
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setPreferenceScreen(createPreference());
-	}
-	
-	public static String getUserID(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context).getString("user_id", "");
-	}
-	public static String getPassword(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context).getString("password", "");
-	}
-	public static String getHookUrl(Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context).getString("hook_url", "");
-	}
-	
-	private PreferenceScreen createPreference() {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setPreferenceScreen(createPreference());
+    }
+    
+    public static String getUserID(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString("user_id", "");
+    }
+    public static String getPassword(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString("password", "");
+    }
+    public static String getHookUrl(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString("hook_url", "");
+    }
+    
+    private PreferenceScreen createPreference() {
         PreferenceScreen root = getPreferenceManager().createPreferenceScreen(this);
         
         EditTextPreference userIdPref = new EditTextPreference(this);
@@ -54,6 +54,6 @@ public class FotoHookSetting extends PreferenceActivity {
 
         
         return root;
-	}
+    }
 }
-	
+    
